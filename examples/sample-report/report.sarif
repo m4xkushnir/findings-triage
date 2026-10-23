@@ -2320,7 +2320,7 @@
       ],
       "tool": {
         "driver": {
-          "informationUri": "https://github.com/OWNER/findings-triage",
+          "informationUri": "https://github.com/m4xkushnir/findings-triage",
           "name": "findings-triage",
           "rules": [
             {

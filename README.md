@@ -42,7 +42,7 @@ enough to audit.
 Requires Python 3.12+ and the scanners on `PATH` (`semgrep`, `trivy`, `gitleaks`).
 
 ```bash
-git clone https://github.com/OWNER/findings-triage && cd findings-triage
+git clone https://github.com/m4xkushnir/findings-triage && cd findings-triage
 uv sync                                   # or: pip install -e .
 triage scan path/to/repo -o .triage/run.json           # runs all three scanners
 triage report .triage/run.json --enrich heuristic      # writes .triage/report/report.{sarif,md,html,json}

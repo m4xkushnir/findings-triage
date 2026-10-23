@@ -39,7 +39,7 @@ jobs:
       - name: Install triage and scanners
         run: |
           # Not on PyPI yet: install from a pinned commit of the repository.
-          pip install "findings-triage[llm] @ git+https://github.com/OWNER/findings-triage@COMMIT_SHA" \
+          pip install "findings-triage[llm] @ git+https://github.com/m4xkushnir/findings-triage@7b6e6a0aeeb817d62539c3d4acf631d10607a80a" \
             "semgrep==${SEMGREP_VERSION}"
           mkdir -p "$RUNNER_TEMP/bin"
           cd "$RUNNER_TEMP"

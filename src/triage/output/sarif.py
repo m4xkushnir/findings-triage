@@ -28,7 +28,7 @@ _SCORE = {
     Severity.LOW: "2.0",
     Severity.INFO: "0.0",
 }
-INFORMATION_URI = "https://github.com/OWNER/findings-triage"
+INFORMATION_URI = "https://github.com/m4xkushnir/findings-triage"
 
 
 def _rule_id(t: TriagedFinding) -> str:
