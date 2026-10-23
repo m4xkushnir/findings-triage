@@ -386,7 +386,8 @@ code, which receives these fixes from the Go toolchain (1.26.9 / 1.27.2), not fr
 
 **Outcome.** The tool confirmed a real issue, not a new discovery: a PR bumping x/net to v0.60.0
 ([gin-gonic/gin#4881](https://github.com/gin-gonic/gin/pull/4881)) was already open. I verified
-that PR rather than opening a duplicate. The bumped modules require the same Go version as Gin
+that PR rather than opening a duplicate, and posted the analysis
+[as a comment on it](https://github.com/gin-gonic/gin/pull/4881#issuecomment-6363927820). The bumped modules require the same Go version as Gin
 (1.26.0), the full test suite passes in all five CI variants on Go 1.26.9 and 1.27.3, and
 govulncheck goes from four called vulnerabilities to zero.
 
