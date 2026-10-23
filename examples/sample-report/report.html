@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triage: gin</title>
+<style>
+:root {
+  --bg: #fbfbfa; --panel: #ffffff; --ink: #1d1f22; --muted: #62666d; --line: #e4e4e1;
+  --crit: #a3142a; --high: #c2410c; --med: #a16207; --low: #3f6212; --info: #52525b;
+  --accent: #1f4fd1; --chip: #f1f1ee; --code: #f5f5f2;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131416; --panel: #1b1d20; --ink: #e8e8e6; --muted: #9a9ea6; --line: #2c2f33;
+    --crit: #ff6b81; --high: #fb923c; --med: #facc15; --low: #a3e635; --info: #a1a1aa;
+    --accent: #7aa2ff; --chip: #25282c; --code: #222428;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px; }
+pre, code { overflow-wrap: anywhere; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 32px 0 12px; }
+.meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.meta code { font-family: var(--mono); font-size: 12px; }
+.funnel { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px;
+  overflow: hidden; margin-top: 20px; }
+.stage { background: var(--panel); padding: 14px 16px; }
+.stage b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+.stage span { color: var(--muted); font-size: 12px; }
+.stage.key b { color: var(--accent); }
+.warn { border-left: 3px solid var(--high); background: var(--panel); padding: 10px 14px;
+  margin: 16px 0 0; border-radius: 0 8px 8px 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 24px 0 12px; }
+.controls button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.controls button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.controls input { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); min-width: 220px; flex: 1; max-width: 360px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+details.f { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+details.f > summary { list-style: none; cursor: pointer; padding: 10px 14px;
+  display: grid; grid-template-columns: 92px 1fr auto; gap: 12px; align-items: baseline; }
+details.f > summary::-webkit-details-marker { display: none; }
+.sev { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.sev.critical { color: var(--crit); } .sev.high { color: var(--high); } .sev.medium { color: var(--med); }
+.sev.low { color: var(--low); } .sev.info { color: var(--info); }
+.title { min-width: 0; overflow-wrap: anywhere; }
+.title .loc { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chip { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); white-space: nowrap; }
+.chip.new { background: var(--accent); color: var(--bg); }
+.body { padding: 0 14px 14px; border-top: 1px solid var(--line); }
+.body dl { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; margin: 12px 0; font-size: 13px; }
+.body dt { color: var(--muted); }
+.body dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.body ol { margin: 4px 0 0; padding-left: 18px; }
+pre { background: var(--code); border-radius: 8px; padding: 10px 12px; overflow-x: auto;
+  font: 12px/1.45 var(--mono); margin: 8px 0 0; }
+.empty { color: var(--muted); padding: 16px 0; }
+footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
+@media (max-width: 640px) {
+  details.f > summary { grid-template-columns: 1fr; gap: 4px; }
+  .chips { justify-content: flex-start; }
+  .body dl { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Security findings triage: gin</h1>
+<div class="meta">
+  commit <code>0f09c3a9b4626d9fe9979cf4d0521d6ae32ab646</code> · as of 2026-10-23 ·
+  scanners gitleaks, semgrep, trivy · enrichment heuristic
+</div>
+
+<div class="funnel">
+  <div class="stage"><b>50</b><span>raw scanner results</span></div>
+  <div class="stage"><b>49</b><span>after dedup (1 cross-scanner)</span></div>
+  <div class="stage"><b>17</b><span>suppressed</span></div>
+  <div class="stage"><b>23</b><span>review</span></div>
+  <div class="stage key"><b>9</b><span>actionable</span></div>
+</div>
+
+
+<div class="controls" role="toolbar" aria-label="Filter findings">
+  <button type="button" data-bucket="actionable" aria-pressed="true">actionable (9)</button>
+  <button type="button" data-bucket="review" aria-pressed="false">review (23)</button>
+  <button type="button" data-bucket="suppressed" aria-pressed="false">suppressed (17)</button>
+  <input type="search" placeholder="Filter by path, rule or text" aria-label="Filter by text">
+</div>
+
+<div class="list">
+  <details class="f" data-bucket="actionable" data-text="go.mod cve-2026-78669 package: golang.org/x/net installed version: v0.57.0 vulnerability cve-2026-78669 severity: high fixed version: 0.60.0 link:…">
+    <summary>
+      <span class="sev high">high</span>
+      <span class="title">CVE-2026-78669 in golang.org/x/net v0.57.0 -&gt; 0.60.0<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>high</dd>
+        <dt>Sources</dt><dd>trivy:CVE-2026-78669</dd>
+        <dt>Assessment</dt><dd>golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity high confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>0598ebcf7b8649fde8ea5df0526d72a5</code></dd>
+<dt>Rule docs</dt><dd><a href="https://avd.aquasec.com/nvd/cve-2026-78669" rel="noreferrer noopener">https://avd.aquasec.com/nvd/cve-2026-78669</a></dd>      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text=".github/dependabot.yml package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown this dependabot configuration does not set a cooldown period.">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">This Dependabot configuration does not set a cooldown period.<span class="loc">.github/dependabot.yml:3-6</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown</dd>
+<dt>CWE</dt><dd>CWE-829</dd>        <dt>Assessment</dt><dd>Matched in shipped code; exploitability needs a reviewer or the LLM pass.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>4559e592963cb16c5b0b559e120a0104</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown" rel="noreferrer noopener">https://semgrep.dev/r/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown</a></dd>      </dl>
+<pre>- package-ecosystem: gomod
+directory: /
+schedule:
+interval: daily</pre>    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text=".github/dependabot.yml package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown this dependabot configuration does not set a cooldown period.">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">This Dependabot configuration does not set a cooldown period.<span class="loc">.github/dependabot.yml:7-14</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown</dd>
+<dt>CWE</dt><dd>CWE-829</dd>        <dt>Assessment</dt><dd>Matched in shipped code; exploitability needs a reviewer or the LLM pass.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>155f2bbd1dc0a22e2e2ace0c789a222c</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown" rel="noreferrer noopener">https://semgrep.dev/r/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown</a></dd>      </dl>
+<pre>- package-ecosystem: github-actions
+directory: /
+groups:
+actions:
+patterns:
+- &#34;*&#34;
+schedule:
+interval: daily</pre>    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="context.go go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly a session cookie was detected without setting the &#39;httponly&#39; flag.">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">A session cookie was detected without setting the &#39;HttpOnly&#39; flag.<span class="loc">context.go:1162-1171</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly</dd>
+<dt>CWE</dt><dd>CWE-1004</dd>        <dt>Assessment</dt><dd>Matched in shipped code; exploitability needs a reviewer or the LLM pass.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>002f837be4d59c986235bc9d1673bca1</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly</a></dd>      </dl>
+<pre>http.SetCookie(c.Writer, &amp;http.Cookie{
+Name: name,
+Value: url.QueryEscape(value),
+MaxAge: maxAge,
+Path: path,
+Domain: domain,
+SameSite: c.sameSite,
+Secure: secure,
+HttpOnly: httpOnly,
+})</pre>    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="context.go go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure a session cookie was detected without setting the &#39;secure&#39; flag.">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">A session cookie was detected without setting the &#39;Secure&#39; flag.<span class="loc">context.go:1162-1171</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure</dd>
+<dt>CWE</dt><dd>CWE-614</dd>        <dt>Assessment</dt><dd>Matched in shipped code; exploitability needs a reviewer or the LLM pass.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>5250a393a97e5b91cd223d9372bcf623</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure</a></dd>      </dl>
+<pre>http.SetCookie(c.Writer, &amp;http.Cookie{
+Name: name,
+Value: url.QueryEscape(value),
+MaxAge: maxAge,
+Path: path,
+Domain: domain,
+SameSite: c.sameSite,
+Secure: secure,
+HttpOnly: httpOnly,
+})</pre>    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="go.mod cve-2026-78660 package: golang.org/x/net installed version: v0.57.0 vulnerability cve-2026-78660 severity: medium fixed version: 0.60.0 link:…">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">CVE-2026-78660 in golang.org/x/net v0.57.0 -&gt; 0.60.0<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>trivy:CVE-2026-78660</dd>
+        <dt>Assessment</dt><dd>golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>148c95cb686e8cd2e5491f77d0e72059</code></dd>
+<dt>Rule docs</dt><dd><a href="https://avd.aquasec.com/nvd/cve-2026-78660" rel="noreferrer noopener">https://avd.aquasec.com/nvd/cve-2026-78660</a></dd>      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="go.mod cve-2026-97032 package: golang.org/x/net installed version: v0.57.0 vulnerability cve-2026-97032 severity: medium fixed version: 0.60.0 link:…">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">CVE-2026-97032 in golang.org/x/net v0.57.0 -&gt; 0.60.0<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>trivy:CVE-2026-97032</dd>
+        <dt>Assessment</dt><dd>golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>3563140c9b4eaba3903a51382384eecb</code></dd>
+<dt>Rule docs</dt><dd><a href="https://avd.aquasec.com/nvd/cve-2026-97032" rel="noreferrer noopener">https://avd.aquasec.com/nvd/cve-2026-97032</a></dd>      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="go.mod cve-2026-78659 package: golang.org/x/net installed version: v0.57.0 vulnerability cve-2026-78659 severity: medium fixed version: 0.60.0 link:…">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">CVE-2026-78659 in golang.org/x/net v0.57.0 -&gt; 0.60.0<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>trivy:CVE-2026-78659</dd>
+        <dt>Assessment</dt><dd>golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>9a0746eb4db48c1f23d3724a2e7a01b8</code></dd>
+<dt>Rule docs</dt><dd><a href="https://avd.aquasec.com/nvd/cve-2026-78659" rel="noreferrer noopener">https://avd.aquasec.com/nvd/cve-2026-78659</a></dd>      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="actionable" data-text="go.mod cve-2026-78663 package: golang.org/x/net installed version: v0.57.0 vulnerability cve-2026-78663 severity: medium fixed version: 0.60.0 link:…">
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">CVE-2026-78663 in golang.org/x/net v0.57.0 -&gt; 0.60.0<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>trivy:CVE-2026-78663</dd>
+        <dt>Assessment</dt><dd>golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>actionable</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>e53d760f951c50fc9fbeca36dd292390</code></dd>
+<dt>Rule docs</dt><dd><a href="https://avd.aquasec.com/nvd/cve-2026-78663" rel="noreferrer noopener">https://avd.aquasec.com/nvd/cve-2026-78663</a></dd>      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="context_test.go generic-api-key detected a generic api key, potentially exposing access to various services and sensitive operations." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected a Generic API Key, potentially exposing access to various services and sensitive operations.<span class="loc">context_test.go:654</span></span>
+      <span class="chips">
+        <span class="chip">secret</span>
+<span class="chip">gitleaks</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>high → low</dd>
+        <dt>Sources</dt><dd>gitleaks:generic-api-key</dd>
+<dt>CWE</dt><dd>CWE-798</dd>        <dt>Assessment</dt><dd>Credential lives in test files; confirm it is not valid anywhere before closing.</dd>
+        <dt>Verdict</dt><dd>exploitable unlikely, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity high -&gt; low</li><li>heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>b562efbcc3b974049acbc8cb301ce6d5</code></dd>
+      </dl>
+<pre>k&lt;SECRET&gt;</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="context_test.go generic-api-key detected a generic api key, potentially exposing access to various services and sensitive operations." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected a Generic API Key, potentially exposing access to various services and sensitive operations.<span class="loc">context_test.go:662</span></span>
+      <span class="chips">
+        <span class="chip">secret</span>
+<span class="chip">gitleaks</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>high → low</dd>
+        <dt>Sources</dt><dd>gitleaks:generic-api-key</dd>
+<dt>CWE</dt><dd>CWE-798</dd>        <dt>Assessment</dt><dd>Credential lives in test files; confirm it is not valid anywhere before closing.</dd>
+        <dt>Verdict</dt><dd>exploitable unlikely, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity high -&gt; low</li><li>heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>83ea0a79d6419e0751e21375af3c2e9a</code></dd>
+      </dl>
+<pre>k&lt;SECRET&gt;</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="context_test.go generic-api-key detected a generic api key, potentially exposing access to various services and sensitive operations." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected a Generic API Key, potentially exposing access to various services and sensitive operations.<span class="loc">context_test.go:3131</span></span>
+      <span class="chips">
+        <span class="chip">secret</span>
+<span class="chip">gitleaks</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>high → low</dd>
+        <dt>Sources</dt><dd>gitleaks:generic-api-key</dd>
+<dt>CWE</dt><dd>CWE-798</dd>        <dt>Assessment</dt><dd>Credential lives in test files; confirm it is not valid anywhere before closing.</dd>
+        <dt>Verdict</dt><dd>exploitable unlikely, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity high -&gt; low</li><li>heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>cfca079a0ca733dca212d27facd9fcda</code></dd>
+      </dl>
+<pre>&lt;SECRET&gt;(&#34;S&lt;SECRET&gt;</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/bson.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/bson.go:26</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>3b4d2a881f9f3037981b1738ed9956ad</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(bytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/data.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/data.go:24</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>0b059efdd4fc1779e3d8946d4514b93d</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(r.Data)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:73</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>e3df6b6932cc4dd3a7a00e7db4654d38</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(jsonBytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:84</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>9872937686b19358458f1ba37cbd9e27</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(jsonBytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:103</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>75dbe336de5efdd183bf5459772271f5</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>if _, err = w.Write(bytesconv.StringToBytes(r.Prefix)); err != nil {</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:107</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>bc559440d619282cf47a75513e8a5f82</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(jsonBytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:125</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>d5c42d194914c0d48f57b1c5e093096b</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(ret)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:130</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>4af8c6718fc0c2c92de2af1ad9c354fa</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>if _, err = w.Write(bytesconv.StringToBytes(callback)); err != nil {</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:134</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>55799b984ed27b901a1f24165b851266</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>if _, err = w.Write(bytesconv.StringToBytes(&#34;(&#34;)); err != nil {</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:138</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>32f76cc5ccfd1689d47ffdf011fef000</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>if _, err = w.Write(ret); err != nil {</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:142</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>29f626ed6624500f06e1782a32753fd5</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>if _, err = w.Write(bytesconv.StringToBytes(&#34;);&#34;)); err != nil {</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/json.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/json.go:174</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>455e1db23dad7e224d4f76640728ce5d</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(buffer.Bytes())</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/pdf.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/pdf.go:19</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>67f62847d6a919a7f25d4e75a8e68802</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err := w.Write(r.Data)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/protobuf.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/protobuf.go:29</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>2d904f7095227e7aa0f83129915dbe59</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(bytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/text.go go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter detected &#39;fprintf&#39; or similar writing to &#39;http.responsewriter&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected &#39;Fprintf&#39; or similar writing to &#39;http.ResponseWriter&#39;.<span class="loc">render/text.go:36</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>5f13062e98cb18dc13c79148cbf8f9c6</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter</a></dd>      </dl>
+<pre>_, err = fmt.Fprintf(w, format, data...)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/text.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/text.go:39</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>4e3b4d2283572e16c524c5d378f43569</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(bytesconv.StringToBytes(format))</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/toml.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/toml.go:29</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>8ba664ac0a55ffcec4178ee591634a2c</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(bytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="render/yaml.go go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter detected directly writing or similar in &#39;http.responsewriter.write()&#39;." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Detected directly writing or similar in &#39;http.ResponseWriter.write()&#39;.<span class="loc">render/yaml.go:29</span></span>
+      <span class="chips">
+        <span class="chip">code</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium → low</dd>
+        <dt>Sources</dt><dd>semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</dd>
+<dt>CWE</dt><dd>CWE-79</dd>        <dt>Assessment</dt><dd>The rule&#39;s author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity medium -&gt; low</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>c24c63906a176236aa8bd0844b158c90</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter" rel="noreferrer noopener">https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter</a></dd>      </dl>
+<pre>_, err = w.Write(bytes)</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="testdata/certificate/key.pem private-key identified a private key, which may compromise cryptographic security and sensitive data encryption." hidden>
+    <summary>
+      <span class="sev low">low</span>
+      <span class="title">Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.<span class="loc">testdata/certificate/key.pem:1-27</span></span>
+      <span class="chips">
+        <span class="chip">secret</span>
+<span class="chip">gitleaks</span><span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>high → low</dd>
+        <dt>Sources</dt><dd>gitleaks:private-key, semgrep:generic.secrets.security.detected-private-key.detected-private-key</dd>
+<dt>CWE</dt><dd>CWE-798</dd>        <dt>Assessment</dt><dd>Credential lives in test files; confirm it is not valid anywhere before closing.</dd>
+        <dt>Verdict</dt><dd>exploitable unlikely, reachable unknown, confidence medium (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity high -&gt; low</li><li>heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>8fd555fdcd7d1f68d8b1a660f1a263fb</code> (+1 alias)</dd>
+      </dl>
+<pre>[begin rsa private key]
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+&lt;SECRET&gt;
+[end rsa private key]</pre>    </div>
+  </details>
+  <details class="f" data-bucket="review" data-text="go.mod go-2026-5932 package: golang.org/x/crypto installed version: v0.56.0 vulnerability go-2026-5932 severity: unknown fixed version: link: [go-2026-5932]()" hidden>
+    <summary>
+      <span class="sev info">info</span>
+      <span class="title">GO-2026-5932 in golang.org/x/crypto v0.56.0 (no fix)<span class="loc">go.mod:1</span></span>
+      <span class="chips">
+        <span class="chip">dependency</span>
+<span class="chip">trivy</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>info</dd>
+        <dt>Sources</dt><dd>trivy:GO-2026-5932</dd>
+        <dt>Assessment</dt><dd>No fixed version is published; reachability of the vulnerable code is unknown.</dd>
+        <dt>Verdict</dt><dd>exploitable unknown, reachable unknown, confidence low (heuristic:v2)</dd>
+        <dt>Decisions</dt><dd><ol><li>severity info confirmed</li><li>heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low</li><li>below medium: review</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>76de45bbe67501fb5250bf2cf2b23e1c</code></dd>
+      </dl>
+    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/codeql.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/codeql.yml:36</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>49edc3dcaa76d40dc22423d9c681b66e</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/checkout@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/codeql.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/codeql.yml:40</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>4f2e033aa99fa02ddd2fd1373fcf4476</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: github/codeql-action/init@v4</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/codeql.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/codeql.yml:49</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>e6bef87e56199d701476ae2853baa176</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: github/codeql-action/analyze@v4</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:19</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>d16008387ba82bc830201f158e525e02</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/checkout@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:23</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>0aac7482f5dbadfeb5544ca22180fe8c</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/setup-go@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:27</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>c64f03265bfd9707caf959078d6f4a16</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: golangci/golangci-lint-action@v9</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:61</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>5059bf53641b69809d5ab36c22e5ea1c</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/setup-go@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:67</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>0dd1c11cfc92ffb342066e1fe4a64e32</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/checkout@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:71</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>5db2e51e1f1d57458026266df00c85b5</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>- uses: actions/cache@v6</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/gin.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/gin.yml:84</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>d94ff7e500861fb8dfebd925229a656d</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: codecov/codecov-action@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/goreleaser.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/goreleaser.yml:16</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>b42fbdccf03de4152326e76284319621</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/checkout@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/goreleaser.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/goreleaser.yml:20</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>2c7788a3e4792881acd2ebc1d699b5c3</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/setup-go@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/goreleaser.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/goreleaser.yml:24</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>e68faf2b905776db9c7fc6485ae3c70c</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: goreleaser/goreleaser-action@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/trivy-scan.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/trivy-scan.yml:25</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>eb864540a363e825cd53c81b49ce507d</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: actions/checkout@v7</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/trivy-scan.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/trivy-scan.yml:30</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>58d76aeea77095c7118439931aa32c8f</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: aquasecurity/trivy-action@v0.36.0</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/trivy-scan.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/trivy-scan.yml:41</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>084da552ba320274d497437c754ecb91</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: github/codeql-action/upload-sarif@v4</pre>    </div>
+  </details>
+  <details class="f" data-bucket="suppressed" data-text=".github/workflows/trivy-scan.yml yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag github actions step uses a mutable tag or branch reference." hidden>
+    <summary>
+      <span class="sev medium">medium</span>
+      <span class="title">GitHub Actions step uses a mutable tag or branch reference.<span class="loc">.github/workflows/trivy-scan.yml:47</span></span>
+      <span class="chips">
+        <span class="chip">config</span>
+<span class="chip">semgrep</span>      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>medium</dd>
+        <dt>Sources</dt><dd>semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</dd>
+<dt>CWE</dt><dd>CWE-1357, CWE-353</dd><dt>Suppressed by</dt><dd>GIN-001 (eval, until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</dd>        <dt>Decisions</dt><dd><ol><li>suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited.</li></ol></dd>
+        <dt>Fingerprint</dt><dd><code>2a69cfeab48587227b9e3f8efc93312e</code></dd>
+<dt>Rule docs</dt><dd><a href="https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag" rel="noreferrer noopener">https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag</a></dd>      </dl>
+<pre>uses: aquasecurity/trivy-action@v0.36.0</pre>    </div>
+  </details>
+<p class="empty" hidden>No findings match.</p>
+</div>
+
+
+<footer>findings-triage 0.1.0 · fingerprint v1 · triage-prompt/v1 · heuristic:v2</footer>
+</main>
+<script>
+(() => {
+  const buttons = [...document.querySelectorAll(".controls button")];
+  const search = document.querySelector(".controls input");
+  const items = [...document.querySelectorAll("details.f")];
+  const empty = document.querySelector(".empty");
+  let bucket = "actionable";
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const el of items) {
+      const ok = el.dataset.bucket === bucket && (!q || el.dataset.text.includes(q));
+      el.hidden = !ok;
+      if (ok) shown++;
+    }
+    empty.hidden = shown !== 0;
+  }
+  for (const b of buttons) b.addEventListener("click", () => {
+    bucket = b.dataset.bucket;
+    for (const o of buttons) o.setAttribute("aria-pressed", String(o === b));
+    apply();
+  });
+  search.addEventListener("input", apply);
+  apply();
+})();
+</script>
+</body>
+</html>

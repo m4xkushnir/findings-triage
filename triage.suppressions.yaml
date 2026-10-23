@@ -1,0 +1,10 @@
+# Suppressions for scanning this repository with itself.
+version: 1
+suppressions:
+  - id: SELF-001
+    match:
+      rule: "semgrep:python.lang.compatibility.python37.*"
+    reason: >-
+      Python 3.7 compatibility checks do not apply: pyproject.toml requires Python 3.12 or newer.
+    author: maxim955827848
+    created: 2026-10-23

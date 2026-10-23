@@ -1,0 +1,12 @@
+version: 1
+suppressions:
+  - id: GIN-001
+    match:
+      rule: "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.*"
+      path: ".github/workflows/**"
+    reason: >-
+      CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry
+      forces the decision to be revisited.
+    author: eval
+    created: 2026-10-23
+    expires: 2027-01-31

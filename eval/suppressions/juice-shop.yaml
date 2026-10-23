@@ -1,0 +1,11 @@
+version: 1
+suppressions:
+  - id: JS-001
+    match:
+      path: "data/static/codefixes/**"
+    reason: >-
+      Answer options for the coding challenges. routes/vulnCodeFixes.ts and vulnCodeSnippet.ts
+      read these files as text to show them to players; they are never executed or deployed
+      as infrastructure.
+    author: eval
+    created: 2026-10-23

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Triage: {{ r.run.root_name }}</title>
+<style>
+:root {
+  --bg: #fbfbfa; --panel: #ffffff; --ink: #1d1f22; --muted: #62666d; --line: #e4e4e1;
+  --crit: #a3142a; --high: #c2410c; --med: #a16207; --low: #3f6212; --info: #52525b;
+  --accent: #1f4fd1; --chip: #f1f1ee; --code: #f5f5f2;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131416; --panel: #1b1d20; --ink: #e8e8e6; --muted: #9a9ea6; --line: #2c2f33;
+    --crit: #ff6b81; --high: #fb923c; --med: #facc15; --low: #a3e635; --info: #a1a1aa;
+    --accent: #7aa2ff; --chip: #25282c; --code: #222428;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 32px 16px 64px; }
+pre, code { overflow-wrap: anywhere; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 32px 0 12px; }
+.meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.meta code { font-family: var(--mono); font-size: 12px; }
+.funnel { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px;
+  overflow: hidden; margin-top: 20px; }
+.stage { background: var(--panel); padding: 14px 16px; }
+.stage b { display: block; font-size: 24px; font-variant-numeric: tabular-nums; }
+.stage span { color: var(--muted); font-size: 12px; }
+.stage.key b { color: var(--accent); }
+.warn { border-left: 3px solid var(--high); background: var(--panel); padding: 10px 14px;
+  margin: 16px 0 0; border-radius: 0 8px 8px 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 24px 0 12px; }
+.controls button { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; }
+.controls button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.controls input { font: inherit; font-size: 13px; padding: 5px 10px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink); min-width: 220px; flex: 1; max-width: 360px; }
+.list { display: flex; flex-direction: column; gap: 8px; }
+details.f { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+details.f > summary { list-style: none; cursor: pointer; padding: 10px 14px;
+  display: grid; grid-template-columns: 92px 1fr auto; gap: 12px; align-items: baseline; }
+details.f > summary::-webkit-details-marker { display: none; }
+.sev { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.sev.critical { color: var(--crit); } .sev.high { color: var(--high); } .sev.medium { color: var(--med); }
+.sev.low { color: var(--low); } .sev.info { color: var(--info); }
+.title { min-width: 0; overflow-wrap: anywhere; }
+.title .loc { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chip { font-size: 11px; padding: 1px 8px; border-radius: 999px; background: var(--chip); color: var(--muted); white-space: nowrap; }
+.chip.new { background: var(--accent); color: var(--bg); }
+.body { padding: 0 14px 14px; border-top: 1px solid var(--line); }
+.body dl { display: grid; grid-template-columns: 140px 1fr; gap: 4px 12px; margin: 12px 0; font-size: 13px; }
+.body dt { color: var(--muted); }
+.body dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.body ol { margin: 4px 0 0; padding-left: 18px; }
+pre { background: var(--code); border-radius: 8px; padding: 10px 12px; overflow-x: auto;
+  font: 12px/1.45 var(--mono); margin: 8px 0 0; }
+.empty { color: var(--muted); padding: 16px 0; }
+footer { margin-top: 40px; color: var(--muted); font-size: 12px; }
+@media (max-width: 640px) {
+  details.f > summary { grid-template-columns: 1fr; gap: 4px; }
+  .chips { justify-content: flex-start; }
+  .body dl { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Security findings triage: {{ r.run.root_name }}</h1>
+<div class="meta">
+  commit <code>{{ r.run.commit or "unknown" }}</code> · as of {{ r.as_of }} ·
+  scanners {{ r.run.scanners | join(", ") }} · enrichment {{ r.enrich_mode }}
+  {% if r.fixed is not none %} · baseline <code>{{ r.baseline_commit or "unknown" }}</code>: {{ new_count }} new, {{ r.fixed | length }} fixed{% endif %}
+</div>
+
+<div class="funnel">
+  <div class="stage"><b>{{ s.raw }}</b><span>raw scanner results</span></div>
+  <div class="stage"><b>{{ s.after_dedup }}</b><span>after dedup ({{ s.cross_scanner_duplicates }} cross-scanner)</span></div>
+  <div class="stage"><b>{{ s.suppressed }}</b><span>suppressed</span></div>
+  <div class="stage"><b>{{ s.review }}</b><span>review</span></div>
+  <div class="stage key"><b>{{ s.actionable }}</b><span>actionable</span></div>
+</div>
+
+{% for w in r.warnings %}<p class="warn">{{ w }}</p>{% endfor %}
+
+<div class="controls" role="toolbar" aria-label="Filter findings">
+  {% for b, n in bucket_counts %}
+  <button type="button" data-bucket="{{ b }}" aria-pressed="{{ 'true' if b == 'actionable' else 'false' }}">{{ b }} ({{ n }})</button>
+  {% endfor %}
+  <input type="search" placeholder="Filter by path, rule or text" aria-label="Filter by text">
+</div>
+
+<div class="list">
+{% for t in r.findings %}
+  {% set f = t.finding %}
+  <details class="f" data-bucket="{{ t.bucket.value }}" data-text="{{ (f.location.path ~ ' ' ~ f.rule_id ~ ' ' ~ f.title) | lower }}"{% if t.bucket.value != 'actionable' %} hidden{% endif %}>
+    <summary>
+      <span class="sev {{ t.effective_severity.value }}">{{ t.effective_severity.value }}</span>
+      <span class="title">{{ subject(t) }}<span class="loc">{{ location(t) }}</span></span>
+      <span class="chips">
+        {% if t.is_new %}<span class="chip new">new</span>{% endif %}
+        <span class="chip">{{ f.kind.value }}</span>
+        {% for sc in f.sources | map(attribute="scanner") | unique %}<span class="chip">{{ sc }}</span>{% endfor %}
+      </span>
+    </summary>
+    <div class="body">
+      <dl>
+        <dt>Reported</dt><dd>{{ f.severity.value }}{% if t.effective_severity != f.severity %} → {{ t.effective_severity.value }}{% endif %}</dd>
+        <dt>Sources</dt><dd>{% for src in f.sources %}{{ src.scanner }}:{{ src.rule_id }}{% if not loop.last %}, {% endif %}{% endfor %}</dd>
+        {% if f.cwe %}<dt>CWE</dt><dd>{{ f.cwe | join(", ") }}</dd>{% endif %}
+        {% if t.suppression %}<dt>Suppressed by</dt><dd>{{ t.suppression.rule_id }} ({{ t.suppression.author }}{% if t.suppression.expires %}, until {{ t.suppression.expires }}{% endif %}): {{ t.suppression.reason }}</dd>{% endif %}
+        {% if t.enrichment %}
+        <dt>Assessment</dt><dd>{{ t.enrichment.reasoning }}</dd>
+        <dt>Verdict</dt><dd>exploitable {{ t.enrichment.exploitable.value }}, reachable {{ t.enrichment.reachable.value }}, confidence {{ t.enrichment.confidence.value }} ({{ t.enrichment.source }})</dd>
+        {% endif %}
+        <dt>Decisions</dt><dd><ol>{% for d in t.decisions %}<li>{{ d }}</li>{% endfor %}</ol></dd>
+        <dt>Fingerprint</dt><dd><code>{{ f.fingerprint }}</code>{% if f.aliases %} (+{{ f.aliases | length }} alias{{ "es" if f.aliases | length > 1 }}){% endif %}</dd>
+        {# help_uri comes from scanner output: only https links, never javascript: or data: #}
+        {% if f.help_uri and f.help_uri.startswith("https://") %}<dt>Rule docs</dt><dd><a href="{{ f.help_uri }}" rel="noreferrer noopener">{{ f.help_uri }}</a></dd>{% endif %}
+      </dl>
+      {% if f.snippet %}<pre>{{ f.snippet }}</pre>{% endif %}
+    </div>
+  </details>
+{% endfor %}
+<p class="empty" hidden>No findings match.</p>
+</div>
+
+{% if usage %}
+<h2>LLM usage</h2>
+<ul>
+{% for u in usage %}<li>{{ u.model }}: {{ u.verdicts }} verdicts, {{ "{:,}".format(u.input_tokens) }} input / {{ "{:,}".format(u.output_tokens) }} output tokens{% if u.cost_usd is not none %}, est. ${{ "%.2f" | format(u.cost_usd) }}{% endif %}</li>{% endfor %}
+</ul>
+{% endif %}
+
+<footer>findings-triage {{ r.tool_version }} · fingerprint {{ r.fingerprint_version }} · {{ r.prompt_version }} · {{ r.heuristic_version }}</footer>
+</main>
+<script>
+(() => {
+  const buttons = [...document.querySelectorAll(".controls button")];
+  const search = document.querySelector(".controls input");
+  const items = [...document.querySelectorAll("details.f")];
+  const empty = document.querySelector(".empty");
+  let bucket = "actionable";
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    for (const el of items) {
+      const ok = el.dataset.bucket === bucket && (!q || el.dataset.text.includes(q));
+      el.hidden = !ok;
+      if (ok) shown++;
+    }
+    empty.hidden = shown !== 0;
+  }
+  for (const b of buttons) b.addEventListener("click", () => {
+    bucket = b.dataset.bucket;
+    for (const o of buttons) o.setAttribute("aria-pressed", String(o === b));
+    apply();
+  });
+  search.addEventListener("input", apply);
+  apply();
+})();
+</script>
+</body>
+</html>

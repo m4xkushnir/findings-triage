@@ -1,0 +1,2477 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "properties": {
+        "triage/asOf": "2026-10-23",
+        "triage/commit": "0f09c3a9b4626d9fe9979cf4d0521d6ae32ab646",
+        "triage/stats": {
+          "actionable": 9,
+          "actionable_by_severity": {
+            "high": 1,
+            "medium": 8
+          },
+          "after_dedup": 49,
+          "by_kind": {
+            "code": 22,
+            "config": 17,
+            "dependency": 6,
+            "secret": 4
+          },
+          "cross_scanner_duplicates": 1,
+          "expired_suppressions": 0,
+          "llm_input_tokens": 0,
+          "llm_output_tokens": 0,
+          "llm_verdicts": 0,
+          "raw": 50,
+          "review": 23,
+          "same_scanner_duplicates": 0,
+          "suppressed": 17
+        }
+      },
+      "results": [
+        {
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78669 Severity: HIGH Fixed Version: 0.60.0 Link:… | golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "0598ebcf7b8649fde8ea5df0526d72a5"
+          },
+          "properties": {
+            "security-severity": "8.0",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity high confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "high"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": "0.60.0",
+              "name": "golang.org/x/net",
+              "version": "v0.57.0"
+            },
+            "triage/reportedSeverity": "high",
+            "triage/sources": [
+              "trivy:CVE-2026-78669"
+            ]
+          },
+          "ruleId": "trivy/CVE-2026-78669"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/dependabot.yml"
+                },
+                "region": {
+                  "endLine": 6,
+                  "startLine": 3
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "This Dependabot configuration does not set a cooldown period. | Matched in shipped code; exploitability needs a reviewer or the LLM pass."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "4559e592963cb16c5b0b559e120a0104"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Matched in shipped code; exploitability needs a reviewer or the LLM pass.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown"
+            ]
+          },
+          "ruleId": "semgrep/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/dependabot.yml"
+                },
+                "region": {
+                  "endLine": 14,
+                  "startLine": 7
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "This Dependabot configuration does not set a cooldown period. | Matched in shipped code; exploitability needs a reviewer or the LLM pass."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "155f2bbd1dc0a22e2e2ace0c789a222c"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Matched in shipped code; exploitability needs a reviewer or the LLM pass.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown"
+            ]
+          },
+          "ruleId": "semgrep/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "context.go"
+                },
+                "region": {
+                  "endLine": 1171,
+                  "startLine": 1162
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "A session cookie was detected without setting the 'HttpOnly' flag. | Matched in shipped code; exploitability needs a reviewer or the LLM pass."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "002f837be4d59c986235bc9d1673bca1"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Matched in shipped code; exploitability needs a reviewer or the LLM pass.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "context.go"
+                },
+                "region": {
+                  "endLine": 1171,
+                  "startLine": 1162
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "A session cookie was detected without setting the 'Secure' flag. | Matched in shipped code; exploitability needs a reviewer or the LLM pass."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "5250a393a97e5b91cd223d9372bcf623"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Matched in shipped code; exploitability needs a reviewer or the LLM pass.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78660 Severity: MEDIUM Fixed Version: 0.60.0 Link:… | golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "148c95cb686e8cd2e5491f77d0e72059"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": "0.60.0",
+              "name": "golang.org/x/net",
+              "version": "v0.57.0"
+            },
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "trivy:CVE-2026-78660"
+            ]
+          },
+          "ruleId": "trivy/CVE-2026-78660"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-97032 Severity: MEDIUM Fixed Version: 0.60.0 Link:… | golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "3563140c9b4eaba3903a51382384eecb"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": "0.60.0",
+              "name": "golang.org/x/net",
+              "version": "v0.57.0"
+            },
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "trivy:CVE-2026-97032"
+            ]
+          },
+          "ruleId": "trivy/CVE-2026-97032"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78659 Severity: MEDIUM Fixed Version: 0.60.0 Link:… | golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "9a0746eb4db48c1f23d3724a2e7a01b8"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": "0.60.0",
+              "name": "golang.org/x/net",
+              "version": "v0.57.0"
+            },
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "trivy:CVE-2026-78659"
+            ]
+          },
+          "ruleId": "trivy/CVE-2026-78659"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78663 Severity: MEDIUM Fixed Version: 0.60.0 Link:… | golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "e53d760f951c50fc9fbeca36dd292390"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "actionable",
+            "triage/decisions": [
+              "severity medium confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "actionable"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "golang.org/x/net v0.57.0 is affected; upgrading to 0.60.0 fixes it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "medium"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": "0.60.0",
+              "name": "golang.org/x/net",
+              "version": "v0.57.0"
+            },
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "trivy:CVE-2026-78663"
+            ]
+          },
+          "ruleId": "trivy/CVE-2026-78663"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "context_test.go"
+                },
+                "region": {
+                  "endLine": 654,
+                  "startLine": 654
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations. | Credential lives in test files; confirm it is not valid anywhere before closing."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "b562efbcc3b974049acbc8cb301ce6d5"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity high -> low",
+              "heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unlikely",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Credential lives in test files; confirm it is not valid anywhere before closing.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "secret",
+            "triage/reportedSeverity": "high",
+            "triage/sources": [
+              "gitleaks:generic-api-key"
+            ]
+          },
+          "ruleId": "gitleaks/generic-api-key"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "context_test.go"
+                },
+                "region": {
+                  "endLine": 662,
+                  "startLine": 662
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations. | Credential lives in test files; confirm it is not valid anywhere before closing."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "83ea0a79d6419e0751e21375af3c2e9a"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity high -> low",
+              "heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unlikely",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Credential lives in test files; confirm it is not valid anywhere before closing.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "secret",
+            "triage/reportedSeverity": "high",
+            "triage/sources": [
+              "gitleaks:generic-api-key"
+            ]
+          },
+          "ruleId": "gitleaks/generic-api-key"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "context_test.go"
+                },
+                "region": {
+                  "endLine": 3131,
+                  "startLine": 3131
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations. | Credential lives in test files; confirm it is not valid anywhere before closing."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "cfca079a0ca733dca212d27facd9fcda"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity high -> low",
+              "heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unlikely",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Credential lives in test files; confirm it is not valid anywhere before closing.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "secret",
+            "triage/reportedSeverity": "high",
+            "triage/sources": [
+              "gitleaks:generic-api-key"
+            ]
+          },
+          "ruleId": "gitleaks/generic-api-key"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/bson.go"
+                },
+                "region": {
+                  "endLine": 26,
+                  "startLine": 26
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "3b4d2a881f9f3037981b1738ed9956ad"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/data.go"
+                },
+                "region": {
+                  "endLine": 24,
+                  "startLine": 24
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "0b059efdd4fc1779e3d8946d4514b93d"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 73,
+                  "startLine": 73
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "e3df6b6932cc4dd3a7a00e7db4654d38"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 84,
+                  "startLine": 84
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "9872937686b19358458f1ba37cbd9e27"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 103,
+                  "startLine": 103
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "75dbe336de5efdd183bf5459772271f5"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 107,
+                  "startLine": 107
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "bc559440d619282cf47a75513e8a5f82"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 125,
+                  "startLine": 125
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "d5c42d194914c0d48f57b1c5e093096b"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 130,
+                  "startLine": 130
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "4af8c6718fc0c2c92de2af1ad9c354fa"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 134,
+                  "startLine": 134
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "55799b984ed27b901a1f24165b851266"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 138,
+                  "startLine": 138
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "32f76cc5ccfd1689d47ffdf011fef000"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 142,
+                  "startLine": 142
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "29f626ed6624500f06e1782a32753fd5"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/json.go"
+                },
+                "region": {
+                  "endLine": 174,
+                  "startLine": 174
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "455e1db23dad7e224d4f76640728ce5d"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/pdf.go"
+                },
+                "region": {
+                  "endLine": 19,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "67f62847d6a919a7f25d4e75a8e68802"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/protobuf.go"
+                },
+                "region": {
+                  "endLine": 29,
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "2d904f7095227e7aa0f83129915dbe59"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/text.go"
+                },
+                "region": {
+                  "endLine": 36,
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected 'Fprintf' or similar writing to 'http.ResponseWriter'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "5f13062e98cb18dc13c79148cbf8f9c6"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/text.go"
+                },
+                "region": {
+                  "endLine": 39,
+                  "startLine": 39
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "4e3b4d2283572e16c524c5d378f43569"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/toml.go"
+                },
+                "region": {
+                  "endLine": 29,
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "8ba664ac0a55ffcec4178ee591634a2c"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "render/yaml.go"
+                },
+                "region": {
+                  "endLine": 29,
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'. | The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "c24c63906a176236aa8bd0844b158c90"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity medium -> low",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "The rule's author labels it low-confidence (expect false positives); demoted one level until a reviewer or the LLM pass confirms it.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "code",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+            ]
+          },
+          "ruleId": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "testdata/certificate/key.pem"
+                },
+                "region": {
+                  "endLine": 27,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption. | Credential lives in test files; confirm it is not valid anywhere before closing."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "8fd555fdcd7d1f68d8b1a660f1a263fb"
+          },
+          "properties": {
+            "security-severity": "2.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity high -> low",
+              "heuristic:v2: exploitable=unlikely, reachable=unknown, confidence=medium",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "medium",
+              "exploitable": "unlikely",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "Credential lives in test files; confirm it is not valid anywhere before closing.",
+              "source": "heuristic:v2",
+              "suggested_severity": "low"
+            },
+            "triage/kind": "secret",
+            "triage/reportedSeverity": "high",
+            "triage/sources": [
+              "gitleaks:private-key",
+              "semgrep:generic.secrets.security.detected-private-key.detected-private-key"
+            ]
+          },
+          "ruleId": "gitleaks/private-key"
+        },
+        {
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "go.mod"
+                },
+                "region": {
+                  "endLine": 1,
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Package: golang.org/x/crypto Installed Version: v0.56.0 Vulnerability GO-2026-5932 Severity: UNKNOWN Fixed Version: Link: [GO-2026-5932]() | No fixed version is published; reachability of the vulnerable code is unknown."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "76de45bbe67501fb5250bf2cf2b23e1c"
+          },
+          "properties": {
+            "security-severity": "0.0",
+            "triage/bucket": "review",
+            "triage/decisions": [
+              "severity info confirmed",
+              "heuristic:v2: exploitable=unknown, reachable=unknown, confidence=low",
+              "below medium: review"
+            ],
+            "triage/enrichment": {
+              "confidence": "low",
+              "exploitable": "unknown",
+              "input_tokens": null,
+              "latency_ms": null,
+              "output_tokens": null,
+              "reachable": "unknown",
+              "reasoning": "No fixed version is published; reachability of the vulnerable code is unknown.",
+              "source": "heuristic:v2",
+              "suggested_severity": "info"
+            },
+            "triage/kind": "dependency",
+            "triage/package": {
+              "ecosystem": "go",
+              "fixed_version": null,
+              "name": "golang.org/x/crypto",
+              "version": "v0.56.0"
+            },
+            "triage/reportedSeverity": "info",
+            "triage/sources": [
+              "trivy:GO-2026-5932"
+            ]
+          },
+          "ruleId": "trivy/GO-2026-5932"
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/codeql.yml"
+                },
+                "region": {
+                  "endLine": 36,
+                  "startLine": 36
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "49edc3dcaa76d40dc22423d9c681b66e"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/codeql.yml"
+                },
+                "region": {
+                  "endLine": 40,
+                  "startLine": 40
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "4f2e033aa99fa02ddd2fd1373fcf4476"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/codeql.yml"
+                },
+                "region": {
+                  "endLine": 49,
+                  "startLine": 49
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "e6bef87e56199d701476ae2853baa176"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 19,
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "d16008387ba82bc830201f158e525e02"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 23,
+                  "startLine": 23
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "0aac7482f5dbadfeb5544ca22180fe8c"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 27,
+                  "startLine": 27
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "c64f03265bfd9707caf959078d6f4a16"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 61,
+                  "startLine": 61
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "5059bf53641b69809d5ab36c22e5ea1c"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 67,
+                  "startLine": 67
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "0dd1c11cfc92ffb342066e1fe4a64e32"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 71,
+                  "startLine": 71
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "5db2e51e1f1d57458026266df00c85b5"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/gin.yml"
+                },
+                "region": {
+                  "endLine": 84,
+                  "startLine": 84
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "d94ff7e500861fb8dfebd925229a656d"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/goreleaser.yml"
+                },
+                "region": {
+                  "endLine": 16,
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "b42fbdccf03de4152326e76284319621"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/goreleaser.yml"
+                },
+                "region": {
+                  "endLine": 20,
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "2c7788a3e4792881acd2ebc1d699b5c3"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/goreleaser.yml"
+                },
+                "region": {
+                  "endLine": 24,
+                  "startLine": 24
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "e68faf2b905776db9c7fc6485ae3c70c"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/trivy-scan.yml"
+                },
+                "region": {
+                  "endLine": 25,
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "eb864540a363e825cd53c81b49ce507d"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/trivy-scan.yml"
+                },
+                "region": {
+                  "endLine": 30,
+                  "startLine": 30
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "58d76aeea77095c7118439931aa32c8f"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/trivy-scan.yml"
+                },
+                "region": {
+                  "endLine": 41,
+                  "startLine": 41
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "084da552ba320274d497437c754ecb91"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/trivy-scan.yml"
+                },
+                "region": {
+                  "endLine": 47,
+                  "startLine": 47
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "GitHub Actions step uses a mutable tag or branch reference."
+          },
+          "partialFingerprints": {
+            "triageFingerprint/v1": "2a69cfeab48587227b9e3f8efc93312e"
+          },
+          "properties": {
+            "security-severity": "5.5",
+            "triage/bucket": "suppressed",
+            "triage/decisions": [
+              "suppressed by GIN-001 (eval until 2027-01-31): CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited."
+            ],
+            "triage/kind": "config",
+            "triage/reportedSeverity": "medium",
+            "triage/sources": [
+              "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag"
+            ]
+          },
+          "ruleId": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+          "suppressions": [
+            {
+              "justification": "GIN-001: CI-only exposure. Accepted until the workflows are migrated to SHA pins; the expiry forces the decision to be revisited. (eval)",
+              "kind": "external",
+              "status": "accepted"
+            }
+          ]
+        }
+      ],
+      "tool": {
+        "driver": {
+          "informationUri": "https://github.com/OWNER/findings-triage",
+          "name": "findings-triage",
+          "rules": [
+            {
+              "id": "gitleaks/generic-api-key",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-798"
+                ]
+              },
+              "shortDescription": {
+                "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations."
+              }
+            },
+            {
+              "id": "gitleaks/private-key",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-798"
+                ]
+              },
+              "shortDescription": {
+                "text": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+              "id": "semgrep/go.lang.security.audit.net.cookie-missing-httponly.cookie-missing-httponly",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-1004"
+                ]
+              },
+              "shortDescription": {
+                "text": "A session cookie was detected without setting the 'HttpOnly' flag."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+              "id": "semgrep/go.lang.security.audit.net.cookie-missing-secure.cookie-missing-secure",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-614"
+                ]
+              },
+              "shortDescription": {
+                "text": "A session cookie was detected without setting the 'Secure' flag."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter",
+              "id": "semgrep/go.lang.security.audit.xss.no-direct-write-to-responsewriter.no-direct-write-to-responsewriter",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-79"
+                ]
+              },
+              "shortDescription": {
+                "text": "Detected directly writing or similar in 'http.ResponseWriter.write()'."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter",
+              "id": "semgrep/go.lang.security.audit.xss.no-fprintf-to-responsewriter.no-fprintf-to-responsewriter",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-79"
+                ]
+              },
+              "shortDescription": {
+                "text": "Detected 'Fprintf' or similar writing to 'http.ResponseWriter'."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown",
+              "id": "semgrep/package_managers.dependabot.dependabot-missing-cooldown.dependabot-missing-cooldown",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-829"
+                ]
+              },
+              "shortDescription": {
+                "text": "This Dependabot configuration does not set a cooldown period."
+              }
+            },
+            {
+              "helpUri": "https://semgrep.dev/r/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+              "id": "semgrep/yaml.github-actions.security.github-actions-mutable-action-tag.github-actions-mutable-action-tag",
+              "properties": {
+                "tags": [
+                  "security",
+                  "CWE-1357",
+                  "CWE-353"
+                ]
+              },
+              "shortDescription": {
+                "text": "GitHub Actions step uses a mutable tag or branch reference."
+              }
+            },
+            {
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-78659",
+              "id": "trivy/CVE-2026-78659",
+              "shortDescription": {
+                "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78659 Severity: MEDIUM Fixed Version: 0.60.0 Link:…"
+              }
+            },
+            {
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-78660",
+              "id": "trivy/CVE-2026-78660",
+              "shortDescription": {
+                "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78660 Severity: MEDIUM Fixed Version: 0.60.0 Link:…"
+              }
+            },
+            {
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-78663",
+              "id": "trivy/CVE-2026-78663",
+              "shortDescription": {
+                "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78663 Severity: MEDIUM Fixed Version: 0.60.0 Link:…"
+              }
+            },
+            {
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-78669",
+              "id": "trivy/CVE-2026-78669",
+              "shortDescription": {
+                "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-78669 Severity: HIGH Fixed Version: 0.60.0 Link:…"
+              }
+            },
+            {
+              "helpUri": "https://avd.aquasec.com/nvd/cve-2026-97032",
+              "id": "trivy/CVE-2026-97032",
+              "shortDescription": {
+                "text": "Package: golang.org/x/net Installed Version: v0.57.0 Vulnerability CVE-2026-97032 Severity: MEDIUM Fixed Version: 0.60.0 Link:…"
+              }
+            },
+            {
+              "id": "trivy/GO-2026-5932",
+              "shortDescription": {
+                "text": "Package: golang.org/x/crypto Installed Version: v0.56.0 Vulnerability GO-2026-5932 Severity: UNKNOWN Fixed Version: Link: [GO-2026-5932]()"
+              }
+            }
+          ],
+          "version": "0.1.0"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

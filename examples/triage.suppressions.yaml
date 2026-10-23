@@ -1,0 +1,41 @@
+# Suppression rules. Commit this file; every change to it goes through review like code.
+#
+# Each rule needs an id, a reason (10+ characters) and an author. `expires` is optional but
+# recommended: after that date the rule stops matching and the findings come back, with a
+# warning naming the lapsed rule. Rules that match nothing are reported as stale.
+#
+# match: all given fields must match.
+#   fingerprint  one exact finding (or any of its aliases)
+#   rule         "scanner:rule_id", shell-style glob
+#   path         path glob; ** spans directories, * stays within one
+#   kind         code | dependency | secret | config
+version: 1
+suppressions:
+  - id: SUP-001
+    match:
+      rule: "semgrep:yaml.github-actions.security.github-actions-mutable-action-tag.*"
+      path: ".github/workflows/**"
+    reason: >-
+      Only first-party actions/* and github/* actions use tags; Dependabot keeps them current.
+      Pinning third-party actions is tracked in SEC-142.
+    author: security@example.com
+    created: 2026-10-01
+    expires: 2027-01-31
+
+  - id: SUP-002
+    match:
+      kind: dependency
+      path: "examples/**"
+    reason: Example apps are documentation and are not installed with the package.
+    author: security@example.com
+    created: 2026-10-01
+
+  - id: SUP-003
+    match:
+      fingerprint: 0123456789abcdef0123456789abcdef
+    reason: >-
+      SHA-1 is used as the HMAC digest for signed cookies, not for collision resistance;
+      changing it would invalidate every existing session. Revisit with the 4.0 release.
+    author: jane@example.com
+    created: 2026-09-15
+    expires: 2026-12-31

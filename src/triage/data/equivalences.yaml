@@ -1,0 +1,21 @@
+# Rules from different scanners that detect the same problem. Each group lists
+# `scanner:rule_id` regular expressions (full match). Reports from two members of a group that
+# overlap on the same lines of the same file are merged into one finding.
+#
+# CWE overlap already merges most code pairs, but Trivy's misconfiguration checks carry no CWE.
+# Every group here was added after seeing both rules fire on the same lines in a real scan and
+# reading both rule descriptions. Co-location alone is not enough: Trivy AWS-0052 (drop invalid
+# headers) and Semgrep aws-elb-access-logs-not-enabled flag the same resource block and are
+# different problems.
+- name: subnet-assigns-public-ip
+  rules:
+    - "trivy:AWS-0164"
+    - "semgrep:terraform\\.aws\\.security\\.aws-subnet-has-public-ip-address\\..*"
+- name: load-balancer-plain-http
+  rules:
+    - "trivy:AWS-0054"
+    - "semgrep:terraform\\.aws\\.security\\.insecure-load-balancer-tls-version\\..*"
+- name: cloudwatch-log-group-unencrypted
+  rules:
+    - "trivy:AWS-0017"
+    - "semgrep:terraform\\.aws\\.security\\.aws-cloudwatch-log-group-unencrypted\\..*"

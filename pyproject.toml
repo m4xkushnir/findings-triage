@@ -1,0 +1,58 @@
+[project]
+name = "findings-triage"
+version = "0.1.0"
+description = "A deterministic triage layer for SAST, SCA and secret-scanner output: stable fingerprints, cross-scanner dedup, audited suppressions and optional LLM enrichment."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+dependencies = [
+    "jinja2>=3.1.6",
+    "pydantic>=2.14.1",
+    "pyyaml>=6.0.3",
+    "typer>=0.27.3",
+]
+
+[project.optional-dependencies]
+llm = [
+    "anthropic>=2.1.0",
+]
+
+[project.scripts]
+triage = "triage.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "triage"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+packages = ["triage"]
+mypy_path = "src"
+
+[[tool.mypy.overrides]]
+module = ["anthropic", "anthropic.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+    "types-pyyaml>=6.0.12.20260906",
+]
