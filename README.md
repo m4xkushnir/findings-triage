@@ -361,6 +361,42 @@ environment has autoescape on. 0 actionable.
 - **Dependency reachability is not analysed.** "Fix available" is the only signal; whether the
   vulnerable function is called is not checked.
 
+### Case study: Gin and `golang.org/x/net`
+
+**What the tool flagged.** In Gin `0f09c3a9b`, Trivy reported five advisories against
+`golang.org/x/net v0.57.0` in `go.mod`. The heuristics kept all five actionable (one high, four
+medium): a fix exists (v0.60.0), and reachability is unknown, because the tool does not analyse
+dependency call graphs.
+
+**What manual analysis showed.** Gin imports `x/net/http2` in exactly one place: `Engine.Handler()`
+(`gin.go:257-264`) serves through `h2c.NewHandler(engine, &http2.Server{})` when the opt-in
+`UseH2C` flag is set, and every `Run*` method goes through `Handler()`. govulncheck (symbol level)
+and reading the code agree:
+
+| Advisory | Issue | Reachable |
+|---|---|---|
+| GO-2026-6611 / CVE-2026-78669 | CPU exhaustion via repeated SETTINGS frames | only with `UseH2C` |
+| GO-2026-6603 / CVE-2026-78659 | memory exhaustion via `Trailer` | only with `UseH2C` |
+| GO-2026-6612 / CVE-2026-78663 | double flow-control refund | only with `UseH2C` |
+| GO-2026-6617 / CVE-2026-97032 | crash from HPACK encoder race | only with `UseH2C` |
+| GO-2026-6610 / CVE-2026-78660 | HTTP/2 `Transport` accepts malformed framing headers | no: client side, Gin never uses `http2.Transport` |
+
+In the default configuration, HTTP/2 is served by the standard library's own copy of the same
+code, which receives these fixes from the Go toolchain (1.26.9 / 1.27.2), not from `go.mod`.
+
+**Outcome.** The tool confirmed a real issue, not a new discovery: a PR bumping x/net to v0.60.0
+([gin-gonic/gin#4881](https://github.com/gin-gonic/gin/pull/4881)) was already open. I verified
+that PR rather than opening a duplicate. The bumped modules require the same Go version as Gin
+(1.26.0), the full test suite passes in all five CI variants on Go 1.26.9 and 1.27.3, and
+govulncheck goes from four called vulnerabilities to zero.
+
+**What it says about the tool.** The output was right that something needed fixing, but coarse
+in two ways. One of the five advisories cannot be reached from Gin and still landed in
+*actionable*. And the four that can be reached depend on an opt-in flag, which a CVE score cannot
+express. Both are the dependency-reachability gap listed under [Limitations](#limitations). For Go
+modules, govulncheck's symbol-level result is the obvious reachability signal to feed into the
+policy (see [Roadmap](#roadmap)).
+
 ## Design decisions and trade-offs
 
 - **Two commands, two artifacts.** Facts (`run.json`) and decisions (report) are separate so
@@ -400,8 +436,9 @@ environment has autoescape on. 0 actionable.
 2. Live LLM measurement: verdict agreement with the labels, tokens, cost, latency.
 3. Git rename detection so moved files keep their findings' identity.
 4. Signed audit-log anchors (Sigstore).
-5. Batch API for nightly full scans; reachability from existing call-graph tools (govulncheck,
-   osv-scanner) where available.
+5. Batch API for nightly full scans. Reachability from existing call-graph tools: govulncheck's
+   symbol-level results for Go modules first (motivated by the Gin case study), osv-scanner for
+   other ecosystems.
 
 ## Development
 
